@@ -4,24 +4,30 @@ import pickle
 from collections import UserDict
 from datetime import date, datetime
 
+
 class Field:
     def __init__(self, value):
         self.__value = None
         self.value = value
 
+
     @property
     def value(self):
         return self.__value
+
 
     @value.setter
     def value(self, value):
         self.__value = value
 
+
     def __str__(self):
         return str(self.value)
 
+
 class Name(Field):
     ...
+
 
 class Phone(Field):
     def __init__(self, value):
@@ -29,9 +35,11 @@ class Phone(Field):
         self.__value = None
         self.value = value
         
+
     @property
     def value(self):
         return self.__value
+
 
     @value.setter
     def value(self, new_value):
@@ -40,8 +48,10 @@ class Phone(Field):
         else:
             self.__value = new_value
 
+
     def __str__(self):
         return f"Phone: {self.value}"
+
 
 class Birthday(Field):
     def __init__(self, value):
@@ -49,9 +59,11 @@ class Birthday(Field):
         self.__value = None
         self.value = value
         
+
     @property
     def value(self):
         return self.__value
+
 
     @value.setter
     def value(self, new_value):
@@ -61,6 +73,7 @@ class Birthday(Field):
                 self.__value = new_value
         except:
             raise ValueError("Invalid data format")
+
 
 class Record:
     def __init__(self, name, phone = None):
@@ -76,6 +89,7 @@ class Record:
         # except:
         #     raise ValueError("Not enough number setter")
 
+
     def edit_phone(self, old_phone, new_phone):
         found = False
         for phone in self.phones:
@@ -86,12 +100,14 @@ class Record:
             raise ValueError(f"The phone {old_phone} is not found.")
             # return f"The phone {old_phone} is not found."
 
+
     def find_phone(self, phone:str):
         for ph in self.phones:
             if ph.value == phone:
                 return ph
         return None
     
+
     def remove_phone(self, phone):
         del_phone = None
         for ph in self.phones:
@@ -99,8 +115,10 @@ class Record:
                 del_phone = ph
         self.phones.remove(del_phone)
 
+
     def add_birthday(self, birthday = None):
         self.birthday = Birthday(birthday)
+
 
     def days_to_birthday(self):
         today = date.today()
@@ -122,6 +140,7 @@ class Record:
                 else:
                     return delta_days.days
 
+
     def __str__(self):
         try:
             return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}, birthday {self.birthday}"
@@ -130,10 +149,10 @@ class Record:
         
 
 class AddressBook(UserDict):
-
     def add_record(self,new_contact:Record) -> None:
         self.data[new_contact.name.value] = new_contact
         return f"Contact {new_contact.name.value} added succefully"
+
 
     def find(self, name):
         for rec in self.data:
@@ -142,6 +161,7 @@ class AddressBook(UserDict):
         if not self.data.get(name):
             return None
         
+
     def search(self, arg):
         return_str = "didn'd find number or characters"
         for rec, phone in self.data.items():
@@ -162,6 +182,7 @@ class AddressBook(UserDict):
             del self.data[name]
             return f"Contact {name} delete succsefull"
         
+
     def iterator(self, n=2):
         self.counter = 0
         self.list = []
@@ -192,22 +213,25 @@ class AddressBook(UserDict):
         else:
             return "File not found"
 
-        
 
 records = AddressBook()
+
 
 def search(*args):
     return records.search(*args)
 
+
 def save_ab(*args):
     records.save_address_book()
     return "Address book saved successful"
+
 
 def load_ab(*args):
     global records
     load_records = records.load_address_book()
     records = load_records
     return "Address book loaded successful"
+
 
 def user_error(func):
     def inner(*args):
