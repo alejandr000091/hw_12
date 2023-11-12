@@ -30,6 +30,9 @@ class Field:
 class Name(Field):
     ...
 
+class Location(Field):
+    ...
+
 
 class Phone(Field):
     def __init__(self, value):
@@ -104,10 +107,14 @@ class Birthday(Field):
 
 
 class Record:
-    def __init__(self, name, phone = None, mail = None):
+    def __init__(self, name, phone = None, mail = None, location = None):
         self.name = Name(name)
         self.phones = [Phone(phone)] if phone else []
         self.mails = [Mail(mail)] if mail else []
+        self.location = Location(location)
+
+    def add_location(self, location = None):
+        self.location = Location(location)
 
     def add_phone(self, phone):
         # new_phone = ''.join(filter(str.isdigit, phone))
@@ -190,6 +197,9 @@ class Record:
 
         if hasattr(self, 'mails') and self.mails:
             return_res += f", mail: {'; '.join(m.value for m in self.mails)}"
+
+        if hasattr(self, 'location') and self.location:
+            return_res += f", location: {self.location}"
 
         return return_res
         
@@ -372,6 +382,21 @@ def bd_add(*args):
     return f"Add record {name = }, {bd = }"
 
 
+def loc_add(*args):
+    name = args[0]
+    loc = args[1:]
+    location = ""
+    for ch in loc:
+        location +=  " " + ch
+    if not records.data.get(name):
+        name_record = Record(name)
+        name_record.add_location(location)
+        records.add_record(name_record)
+    else:
+        name_record = records.data.get(name)
+        name_record.add_location(location)
+    return f"Add record {name = }, {location = }"
+
 @user_error 
 def mail_add(*args):
     name = args[0]
@@ -469,7 +494,8 @@ def help_cmd(*args):
             "add - add record - format 'name phone'",
             "mail_add - add mail - format 'name nickname@domen.yy'",
             "mail_change - change mail - format 'name old mail new mail'",
-            "bd_add - add birthdayd - format 'name date birthday (YYYY-MM-DD)'",
+            "bd_add - add birthday/or replace, if data olready exist - format 'name date birthday (YYYY-MM-DD)'",
+            "location_add - add location/or replace, if data olready exist "
             "days_to_bd - days to birthday",
             "change - change record - format 'name old phone new phone'",
             "delete - delete record - format 'name'",
@@ -533,6 +559,7 @@ COMMANDS = {add_record: "add",
             # add_phone: "add phone",
             # edit_phone: "edit phone",
             mail_add: "mail_add",
+            loc_add: "location_add",
             mail_change: "mail_change",
             bd_add: "bd_add",
             days_to_bd: "days_to_bd",
