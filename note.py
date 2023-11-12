@@ -47,5 +47,5 @@ print(new_note_1)
 print(notebooks.add_record(new_note_1))
 
 for key, el in notebooks.items():
-    print(str(key), str(el))
+    print(key, el)
 
