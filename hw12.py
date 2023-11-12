@@ -107,13 +107,13 @@ class Birthday(Field):
 
 
 class Record:
-    def __init__(self, name, phone = None, mail = None, location = None):
+    def __init__(self, name, phone = None, mail = None):
         self.name = Name(name)
         self.phones = [Phone(phone)] if phone else []
         self.mails = [Mail(mail)] if mail else []
-        self.location = Location(location)
+        # self.location = Location(location)
 
-    def add_location(self, location = None):
+    def add_location(self, location):
         self.location = Location(location)
 
     def add_phone(self, phone):
@@ -255,18 +255,23 @@ class AddressBook(UserDict):
         
      
     def save_address_book(self):
-        self.file_name = 'address_book.bin'
-        with open(self.file_name , "wb") as file:
+        directory = 'C:\\py_robot'
+        self.file_name = os.path.join(directory, 'address_book.bin')
+        os.makedirs(directory, exist_ok=True)
+        with open(self.file_name, "wb") as file:
             pickle.dump(self, file)
 
-    
     def load_address_book(self):
-        self.file_name = 'address_book.bin'
-        if os.path.exists(self.file_name):
-            with open(self.file_name, "rb") as file:
-                unpacked = pickle.load(file)
-            return unpacked
-        else:
+        directory = 'C:\\py_robot'
+        self.file_name = os.path.join(directory, 'address_book.bin')
+        # print(self.file_name)
+        os.makedirs(directory, exist_ok=True)
+        try:
+            if os.path.exists(self.file_name):
+                with open(self.file_name, "rb") as file:
+                    unpacked = pickle.load(file)
+                return unpacked
+        except:
             return "File not found"
 
 
@@ -495,14 +500,14 @@ def help_cmd(*args):
             "mail_add - add mail - format 'name nickname@domen.yy'",
             "mail_change - change mail - format 'name old mail new mail'",
             "bd_add - add birthday/or replace, if data olready exist - format 'name date birthday (YYYY-MM-DD)'",
-            "location_add - add location/or replace, if data olready exist "
+            "location_add - add location/or replace, if data olready exist"
             "days_to_bd - days to birthday",
             "change - change record - format 'name old phone new phone'",
             "delete - delete record - format 'name'",
             "phone - get phone by name - format 'phone name'",
             "show_all - show all phone book",
             "save_ab - save address book",
-            "search - search by characters in name, or by digits in phone"
+            "search - search by characters in name, or by digits in phone",
             "load_ab - load address book",
             "good bye/close/exit - shotdown this script"]
     for ch in cmd_list:
@@ -583,6 +588,7 @@ def parser(text: str):
 
 
 def main():
+    load_ab("1")
     while True:
         user_input = input(">>>")
         func, data = parser(user_input)
@@ -599,43 +605,18 @@ def main():
         else:
             print(func(*data))
         if func == close_cmd:
+            save_ab("1")
             break
 
 
 if __name__ == "__main__":
     main()
-    # # Створення нової адресної книги
-    # book = AddressBook()
 
-    # # Створення запису для John
-    # john_record = Record("John")
-    # john_record.add_phone("1234567890")
-    # john_record.add_phone("5555555555")
-    # john_record.add_birthday("1991-04-21")
-    # john_record.add_mail("alejandr@gmail.c")
-    # print(john_record.mails)
-
-    # # Додавання запису John до адресної книги
-    # book.add_record(john_record)
-
-    # # Створення та додавання нового запису для Jane
-    # jane_record = Record("Jane")
-    # jane_record.add_phone("9876543210")
-    # book.add_record(jane_record)
-
-    # # Виведення всіх записів у книзі
-    # for name, record in book.data.items():
-    #     print(record)
-
-    # # Знаходження та редагування телефону для John
-    # john = book.find("John")
-    # john.edit_phone("1234567890", "1112223333")
-
-    # print(john)  # Виведення: Contact name: John, phones: 1112223333; 5555555555
-
-    # # Пошук конкретного телефону у записі John
-    # found_phone = john.find_phone("5555555555")
-    # print(f"{john.name}: {found_phone}")  # Виведення: 5555555555
-
-    # # Видалення запису Jane
-    # book.delete("Jane")
+    # load_ab("1")
+    # return_str = "\n"
+    # for user, keys in records.items():
+    #     print(user)
+    #     print(keys)
+    #     return_str += str(keys) + "\n"
+    
+    # print(return_str)
