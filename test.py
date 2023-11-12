@@ -1,11 +1,6 @@
 import re
 from datetime import datetime
 
-data = "Contact name: Bill, birthday: 1990-12-26"
-
-if "ggggg" in data:
-    print(data)
-
 data_string = """
 Contact name: my1, phones: 0934283855; 0934283855
 Contact name: Bill, birthday: 1990-12-26
@@ -16,19 +11,28 @@ Contact name: Denis, birthday: 2005-1-2
 Contact name: Alex, birthday: 1990-1-3
 Contact name: JanKoum, birthday: 1976-1-1
 """
-for line in data_string:
-    print(line)
 
+# Визначте регулярний вираз для вилучення інформації
+pattern = re.compile(r"Contact name: (?P<name>.*?), birthday: (?P<birthday>\d{4}-\d{1,2}-\d{1,2})")
 
-# pattern = re.compile(r'Contact name: (?P<name>.*?), (?:phones: (?P<phones>.*?); )?(?:birthday: (?P<birthday>.*?))?$')
-# matches = pattern.finditer(data_string)
+matches = pattern.finditer(data_string)
 
-# result = []
+# Створіть список словників з вилученою інформацією
+users = []
+for match in matches:
+    name = match.group("name")
+    birthday_str = match.group("birthday")
+    birthday = datetime.strptime(birthday_str, "%Y-%m-%d").date()
+    # user = {"name": name, "birthday": birthday}
+    user = {name: birthday}
+    users.append(user)
 
-# for match in matches:
-#     info_dict = match.groupdict()
-#     if "birthday" in info_dict:
-#         info_dict["birthday"] = datetime.strptime(info_dict["birthday"], "%Y-%m-%d").date()
-#     result.append(info_dict)
+print(users)
 
-# print(result)
+#[{'name': 'Bill', 'birthday': datetime.date(1990, 12, 26)}, 
+#{'name': 'John', 'birthday': datetime.date(1995, 12, 29)}, 
+#{'name': 'Tilda', 'birthday': datetime.date(2000, 12, 30)},
+#{'name': 'Marry', 'birthday': datetime.date(2000, 1, 1)}, 
+#{'name': 'Denis', 'birthday': datetime.date(2005, 1, 2)}, 
+#{'name': 'Alex', 'birthday': datetime.date(1990, 1, 3)}, 
+# {'name': 'JanKoum', 'birthday': datetime.date(1976, 1, 1)}]

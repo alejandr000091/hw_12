@@ -290,14 +290,19 @@ def save_ab(*args):
 def load_ab(*args):
     global records
     load_records = records.load_address_book()
-    records = load_records
-    return "Address book loaded successful"
+    if load_records is not None:
+        records = load_records
+        return "Address book loaded successfully"
+    else:
+        return "Failed to load address book"
 
 
 def user_error(func):
     def inner(*args):
         try:
             return func(*args)
+        # except AttributeError:
+            # return "ab empty"
         except IndexError:
             return "Give me name and phone please"
         except KeyError:
@@ -325,6 +330,8 @@ def user_error(func):
             else:
                 raise e  # Піднімаэмо помилку наверх, якщо вона іншого типу
     return inner
+
+
 
 
 def sanitize_phone_number(phone):
@@ -588,7 +595,7 @@ def parser(text: str):
 
 
 def main():
-    load_ab("1")
+    
     while True:
         user_input = input(">>>")
         func, data = parser(user_input)
@@ -610,6 +617,8 @@ def main():
 
 
 if __name__ == "__main__":
+    records = AddressBook()
+    load_ab("1")
     main()
 
     # load_ab("1")
