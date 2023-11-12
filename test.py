@@ -16,6 +16,8 @@ Contact name: Denis, birthday: 2005-1-2
 Contact name: Alex, birthday: 1990-1-3
 Contact name: JanKoum, birthday: 1976-1-1
 """
+for line in data_string:
+    print(line)
 
 
 # pattern = re.compile(r'Contact name: (?P<name>.*?), (?:phones: (?P<phones>.*?); )?(?:birthday: (?P<birthday>.*?))?$')
