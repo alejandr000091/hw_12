@@ -69,17 +69,14 @@ class Mail(Field):
         patern_mail = r"[A-z.]+\w+@[A-z]+\.[A-z]{2,}"
         try:
             if bool(re.match(patern_mail, value)):
+                # return value
                 self.__value = value
             else:
                 raise ValueError("Mail should have the following format nickname@domen.yy")
-        except ValueError as e:
-            raise ValueError("Mail should have the following format nickname@domen.yy") from e
-
-
-    # def __str__(self):
-    #     return f"Mail: {self.__value}"
-    def __str__(self) -> str:
-        return f"Mail: {self.__value}"
+        except: ValueError("Mail should have the following format nickname@domen.yy")
+    
+    def __str__(self):
+        return f"Mail: {self.value}"
 
 class Birthday(Field):
     def __init__(self, value):
@@ -110,9 +107,13 @@ class Record:
         self.mails = [Mail(mail)] if mail else []
 
     def add_phone(self, phone):
-        # new_phone = ''.join(filter(str.isdigit, phone))
-        self.phones.append(Phone(phone))
-
+        new_phone = ''.join(filter(str.isdigit, phone))
+        # if len(new_phone) != 10:
+        #     print(f"Invalid phone length: {new_phone}")
+        # try:
+        self.phones.append(Phone(new_phone))
+        # except:
+        #     raise ValueError("Not enough number setter")
 
     def add_mail(self, value):
         self.mails.append(Mail(value))
@@ -125,17 +126,6 @@ class Record:
                 found = True
         if not found:
             raise ValueError(f"The phone {old_phone} is not found.")
-            # return f"The phone {old_phone} is not found."
-
-    
-    def edit_mail(self, old_mail, new_mail):
-        found = False
-        for mail in self.mails:
-            if mail.value == old_mail:
-                mail.value = new_mail
-                found = True
-        if not found:
-            raise ValueError(f"The mail {old_mail} is not found.")
             # return f"The phone {old_phone} is not found."
 
 
@@ -180,18 +170,10 @@ class Record:
 
 
     def __str__(self):
-        return_res = f"Contact name: {self.name.value}"
-
-        if hasattr(self, 'phones') and self.phones:
-            return_res += f", phones: {'; '.join(p.value for p in self.phones)}"
-
-        if hasattr(self, 'birthday') and self.birthday:
-            return_res += f", birthday: {self.birthday}"
-
-        if hasattr(self, 'mails') and self.mails:
-            return_res += f", mail: {'; '.join(m.value for m in self.mails)}"
-
-        return return_res
+        try:
+            return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}, birthday {self.birthday}, mail {'; '.join(m.value for m in self.mails)}"
+        except:
+            return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}"
         
 
 class AddressBook(UserDict):
@@ -303,10 +285,6 @@ def user_error(func):
                 return "Invalid data format"
             if str(e) == "Invalid phone number, should contain 10 digits":
                 return "Invalid phone number, should contain 10 digits"
-            if str(e) == "Mail should have the following format nickname@domen.yy":
-                return "Mail should have the following format nickname@domen.yy"
-            if str(e) == "wrong name, try again":
-                return "wrong name, try again"
             else:
                 raise e  # Піднімаэмо помилку наверх, якщо вона іншого типу
     return inner
@@ -372,10 +350,9 @@ def bd_add(*args):
     return f"Add record {name = }, {bd = }"
 
 
-@user_error 
 def mail_add(*args):
     name = args[0]
-    mail = str(args[1])
+    mail = args[1:]
     if not records.data.get(name):
         name_record = Record(name)
         name_record.add_mail(mail)
@@ -383,26 +360,7 @@ def mail_add(*args):
     else:
         name_record = records.data.get(name)
         name_record.add_mail(mail)
-    return f"Add record {name = }, {mail = }"
-
-
-@user_error
-def mail_change(*args):
-    name = args[0]
-    old_mail = str(args[1])
-    new_mail = str(args[2])
-    if not records.data.get(name):
-        raise ValueError("wrong name, try again")
-    else:
-        try:
-            name_record = records.data.get(name)
-            try:
-                name_record.edit_mail(old_mail, new_mail)
-                return f"Change record {name = }, {new_mail = }"
-            except:
-                return f"The mail {new_mail} is not valid."
-        except:
-            return f"The mail {old_mail} is not found."
+    return f"Add record {name = }, {str(mail) = }"
 
 
 def days_to_bd(*args):
@@ -438,11 +396,8 @@ def change_record(*args):
     else:
         try:
             name_record = records.data.get(name)
-            try:
-                name_record.edit_phone(old_phone_number, new_phone_number)
-                return f"Change record {name = }, {new_phone_number = }"
-            except:
-                return f"The phone {new_phone_number} is not valid."
+            name_record.edit_phone(old_phone_number, new_phone_number)
+            return f"Change record {name = }, {new_phone_number = }"
         except:
             return f"The phone {old_phone_number} is not found."
 
@@ -467,8 +422,7 @@ def help_cmd(*args):
             "hello - just say hello",
             "help - show avalible cmd",
             "add - add record - format 'name phone'",
-            "mail_add - add mail - format 'name nickname@domen.yy'",
-            "mail_change - change mail - format 'name old mail new mail'",
+            "mail_add - add mail - format 'name nickname@domen.yy'"
             "bd_add - add birthdayd - format 'name date birthday (YYYY-MM-DD)'",
             "days_to_bd - days to birthday",
             "change - change record - format 'name old phone new phone'",
@@ -533,7 +487,6 @@ COMMANDS = {add_record: "add",
             # add_phone: "add phone",
             # edit_phone: "edit phone",
             mail_add: "mail_add",
-            mail_change: "mail_change",
             bd_add: "bd_add",
             days_to_bd: "days_to_bd",
             delete_record: "delete",
@@ -576,39 +529,38 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
-    # # Створення нової адресної книги
-    # book = AddressBook()
+        # Створення нової адресної книги
+    book = AddressBook()
 
-    # # Створення запису для John
-    # john_record = Record("John")
-    # john_record.add_phone("1234567890")
-    # john_record.add_phone("5555555555")
-    # john_record.add_birthday("1991-04-21")
-    # john_record.add_mail("alejandr@gmail.c")
-    # print(john_record.mails)
+    # Створення запису для John
+    john_record = Record("John")
+    john_record.add_phone("1234567890")
+    john_record.add_phone("5555555555")
+    john_record.add_birthday("1991-04-21")
+    john_record.add_mail("alejandr@gmail.co")
+    print(john_record.mails)
 
-    # # Додавання запису John до адресної книги
-    # book.add_record(john_record)
+    # Додавання запису John до адресної книги
+    book.add_record(john_record)
 
-    # # Створення та додавання нового запису для Jane
-    # jane_record = Record("Jane")
-    # jane_record.add_phone("9876543210")
-    # book.add_record(jane_record)
+    # Створення та додавання нового запису для Jane
+    jane_record = Record("Jane")
+    jane_record.add_phone("9876543210")
+    book.add_record(jane_record)
 
-    # # Виведення всіх записів у книзі
-    # for name, record in book.data.items():
-    #     print(record)
+    # Виведення всіх записів у книзі
+    for name, record in book.data.items():
+        print(record)
 
-    # # Знаходження та редагування телефону для John
-    # john = book.find("John")
-    # john.edit_phone("1234567890", "1112223333")
+    # Знаходження та редагування телефону для John
+    john = book.find("John")
+    john.edit_phone("1234567890", "1112223333")
 
-    # print(john)  # Виведення: Contact name: John, phones: 1112223333; 5555555555
+    print(john)  # Виведення: Contact name: John, phones: 1112223333; 5555555555
 
-    # # Пошук конкретного телефону у записі John
-    # found_phone = john.find_phone("5555555555")
-    # print(f"{john.name}: {found_phone}")  # Виведення: 5555555555
+    # Пошук конкретного телефону у записі John
+    found_phone = john.find_phone("5555555555")
+    print(f"{john.name}: {found_phone}")  # Виведення: 5555555555
 
-    # # Видалення запису Jane
-    # book.delete("Jane")
+    # Видалення запису Jane
+    book.delete("Jane")
