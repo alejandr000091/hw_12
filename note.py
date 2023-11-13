@@ -43,8 +43,12 @@ class NoteBook(UserDict):
 
 notebooks = NoteBook()
 new_note_1 = Record(("#buy", "#birthday", "#grandma"), "by grandma present for her present")
+new_note_2 = Record(("#fun", "#fest", "#weekend"), "sun we will went at atlas weekend")
 print(new_note_1)
+print(new_note_2)
 print(notebooks.add_record(new_note_1))
+print(notebooks.add_record(new_note_2))
+
 
 for key, el in notebooks.items():
     print(key, el)

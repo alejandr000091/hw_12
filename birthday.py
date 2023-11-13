@@ -69,6 +69,7 @@ def get_birthdays_per_week(users: list, in_days = 7) -> list:
                 result_dict.update({bd_weak_day:(set_user_name)})
             else:
                 result_dict[bd_weak_day].append(user["name"])
+    # return result_dict
     users = user_sort(result_dict, current_day)
     return users
 

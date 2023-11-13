@@ -1,38 +1,27 @@
-import re
-from datetime import datetime
+from prompt_toolkit import prompt
+from prompt_toolkit.completion import WordCompleter
 
-data_string = """
-Contact name: my1, phones: 0934283855; 0934283855
-Contact name: Bill, birthday: 1990-12-26
-Contact name: John, birthday: 1995-12-29
-Contact name: Tilda, birthday: 2000-12-30
-Contact name: Marry, birthday: 2000-1-1
-Contact name: Denis, birthday: 2005-1-2
-Contact name: Alex, birthday: 1990-1-3
-Contact name: JanKoum, birthday: 1976-1-1
-"""
 
-# Визначте регулярний вираз для вилучення інформації
-pattern = re.compile(r"Contact name: (?P<name>.*?), birthday: (?P<birthday>\d{4}-\d{1,2}-\d{1,2})")
+cmd_list = [
+    "available commands:",
+    "hello - just say hello",
+    "help - show available cmd",
+    "add - add record or add additional phone - format 'name phone'",
+    "bd_add - add birthday - format 'name date birthday (YYYY-MM-DD)'",
+    "mail_add - add mail - format 'name nickname@domain.yy'",
+    "mail_change - change mail - format 'name old mail new mail'",
+    "location_add - add location/or replace if data already exist",
+    "add_notes - ",
+    "search_note - ",
+    "show_bd_by_days - ",
+    "days_to_bd - days to birthday - format 'name'",
+    "change - change record - format 'name old phone new phone'",
+    "delete - delete record - format 'name'",
+    "phone - get phone by name - format 'phone name'",
+    "show_all - show all phone book",
+    "sort_folder - sort dirty folder by Audio, Docs, Archives, Music, Images, Other",
+    "search - search by name or phone number",
+    "goodbye/close/exit - shutdown this script",
+]
 
-matches = pattern.finditer(data_string)
-
-# Створіть список словників з вилученою інформацією
-users = []
-for match in matches:
-    name = match.group("name")
-    birthday_str = match.group("birthday")
-    birthday = datetime.strptime(birthday_str, "%Y-%m-%d").date()
-    # user = {"name": name, "birthday": birthday}
-    user = {name: birthday}
-    users.append(user)
-
-print(users)
-
-#[{'name': 'Bill', 'birthday': datetime.date(1990, 12, 26)}, 
-#{'name': 'John', 'birthday': datetime.date(1995, 12, 29)}, 
-#{'name': 'Tilda', 'birthday': datetime.date(2000, 12, 30)},
-#{'name': 'Marry', 'birthday': datetime.date(2000, 1, 1)}, 
-#{'name': 'Denis', 'birthday': datetime.date(2005, 1, 2)}, 
-#{'name': 'Alex', 'birthday': datetime.date(1990, 1, 3)}, 
-# {'name': 'JanKoum', 'birthday': datetime.date(1976, 1, 1)}]
+completer = WordCompleter(cmd_list)

@@ -5,7 +5,11 @@ import pickle
 
 from collections import UserDict
 from datetime import date, datetime
-
+#######################
+from birthday import get_birthdays_per_week as birthday_from_now
+from convert import convert_str_dict
+from pprint import pprint
+#######################
 
 class Field:
     def __init__(self, value):
@@ -509,6 +513,7 @@ def help_cmd(*args):
             "bd_add - add birthday/or replace, if data olready exist - format 'name date birthday (YYYY-MM-DD)'",
             "location_add - add location/or replace, if data olready exist"
             "days_to_bd - days to birthday",
+            "bd_in_days - show all users who has bd in n(7day max) days format 'bd_in_days 2(n days)'",
             "change - change record - format 'name old phone new phone'",
             "delete - delete record - format 'name'",
             "phone - get phone by name - format 'phone name'",
@@ -567,6 +572,20 @@ def show_all(*args):
 def close_cmd(*args):
     return "Good bye!"
 
+#################################
+def bd_in_days(*args):
+    in_days = int(args[0])
+    if in_days > 7:
+        print("seven days max")
+        in_days = 7
+    # print(in_days)
+    result_str = show_all()
+    result_dct = convert_str_dict(result_str)
+    # pprint(result_dct)
+    out_result = birthday_from_now(result_dct, in_days)
+    return out_result
+#################################
+
 COMMANDS = {add_record: "add",
             # add_phone: "add phone",
             # edit_phone: "edit phone",
@@ -575,6 +594,9 @@ COMMANDS = {add_record: "add",
             mail_change: "mail_change",
             bd_add: "bd_add",
             days_to_bd: "days_to_bd",
+            #################################
+            bd_in_days: "bd_in_days",
+            #################################
             delete_record: "delete",
             change_record: "change",
             hello_cmd: "hello",
@@ -620,6 +642,7 @@ if __name__ == "__main__":
     records = AddressBook()
     load_ab("1")
     main()
+    
 
     # load_ab("1")
     # return_str = "\n"
